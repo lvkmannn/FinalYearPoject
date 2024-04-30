@@ -69,10 +69,11 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
                 android:layout_marginEnd="20dp"
+                android:layout_marginBottom="8dp"
+                android:backgroundTint="@color/lightblue"
                 android:src="@drawable/round_call_24"
-                android:backgroundTint="@color/lightblue"/>
+                tools:ignore="SpeakableTextPresentCheck" />
 
         </RelativeLayout>
     </RelativeLayout>
