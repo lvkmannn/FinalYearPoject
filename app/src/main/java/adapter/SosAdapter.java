@@ -25,6 +25,7 @@ public class SosAdapter extends BaseAdapter implements Filterable {
     private List<FireDepartment> mDataFiltered;
     private final LayoutInflater mInflater;
 
+
     public SosAdapter(Context mContext, List<FireDepartment> mData) {
         this.mContext = mContext;
         this.mData = mData;
