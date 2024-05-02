@@ -25,6 +25,7 @@ public class SosAdapter extends BaseAdapter implements Filterable {
     private List<FireDepartment> mDataFiltered;
     private final LayoutInflater mInflater;
 
+
     public SosAdapter(Context mContext, List<FireDepartment> mData) {
         this.mContext = mContext;
         this.mData = mData;
@@ -66,6 +67,19 @@ public class SosAdapter extends BaseAdapter implements Filterable {
         districtText.setText(fireDepartment.getDistrict());
         stateText.setText(fireDepartment.getState());
         phoneNumText.setText(fireDepartment.getPhoneNum());
+
+
+        callFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FireDepartment calledFireDepartment = mData.get(position);
+                String phoneNum = calledFireDepartment.getPhoneNum();
+
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                intent.setData(Uri.parse("tel:" + phoneNum));
+                mContext.startActivity(intent);
+            }
+        });
 
         return v;
     }
