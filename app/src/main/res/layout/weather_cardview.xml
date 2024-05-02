@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -39,55 +40,62 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/locationText"
                 android:text="Morning Forecast"
-                android:textSize="15dp"/>
+                android:textSize="15dp"
+                tools:ignore="TextSizeCheck" />
 
             <TextView
+                android:id="@+id/afternoonText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/afternoonText"
                 android:layout_below="@+id/morningText"
                 android:text="Afternoon Forecast"
-                android:textSize="15dp"/>
+                android:textSize="15dp"
+                tools:ignore="TextSizeCheck" />
 
             <TextView
+                android:id="@+id/nightText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/nightText"
                 android:layout_below="@id/afternoonText"
                 android:text="Night Forecast"
-                android:textSize="15dp"/>
+                android:textSize="15dp"
+                tools:ignore="TextSizeCheck" />
 
             <TextView
+                android:id="@+id/summaryText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/summaryText"
                 android:layout_below="@+id/nightText"
                 android:text="Summary Forecast"
-                android:textSize="15dp"/>
+                android:textSize="15dp"
+                tools:ignore="TextSizeCheck" />
 
             <TextView
+                android:id="@+id/whenText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/whenText"
                 android:layout_below="@id/summaryText"
                 android:text="Summary When"
-                android:textSize="15dp"/>
+                android:textSize="15dp"
+                tools:ignore="TextSizeCheck" />
 
             <TextView
+                android:id="@+id/minTempText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/minTempText"
                 android:layout_below="@+id/whenText"
                 android:text="Min Temp"
-                android:textSize="15dp"/>
+                android:textSize="15dp"
+                tools:ignore="TextSizeCheck" />
 
             <TextView
+                android:id="@+id/maxTempText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/maxTempText"
                 android:layout_below="@+id/minTempText"
                 android:text="Max Temp"
-                android:textSize="15dp"/>
+                android:textSize="15dp"
+                tools:ignore="TextSizeCheck" />
 
         </RelativeLayout>
     </RelativeLayout>

@@ -19,7 +19,8 @@
             android:layout_marginTop="20dp"
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="20dp"
-            tools:srcCompat="@drawable/jabatan_bomba_dan_penyelamat_malaysia_seeklogo_2" />
+            app:srcCompat="@drawable/bombalogo"
+            android:scaleType="fitCenter"/>
 
         <RelativeLayout
             android:id="@+id/infoLayout"
@@ -30,36 +31,36 @@
             android:layout_marginBottom="5dp">
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="250dp"
                 android:layout_height="wrap_content"
-                android:id="@+id/firestationText"
+                android:id="@+id/FireDepartmentText"
                 android:text="Fire Station"
-                android:textSize="20dp"
+                android:textSize="18dp"
                 android:textStyle="bold"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/districtText"
-                android:layout_below="@id/firestationText"
-                android:textSize="20dp"
-                android:text="District"/>
+                android:id="@+id/locationText"
+                android:layout_below="@id/FireDepartmentText"
+                android:textSize="18dp"
+                android:text="Location"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/stateText"
-                android:layout_below="@+id/districtText"
-                android:text="State"
-                android:textSize="20dp"/>
+                android:id="@+id/districtText"
+                android:layout_below="@+id/locationText"
+                android:text="Disctrict"
+                android:textSize="18dp"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/phoneNumText"
-                android:layout_below="@+id/stateText"
+                android:layout_below="@+id/districtText"
                 android:text="Phone Number"
-                android:textSize="20dp"/>
+                android:textSize="18dp"/>
 
             <!-- Add FloatingActionButton inside the RelativeLayout -->
             <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -68,11 +69,14 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="20dp"
-                android:src="@drawable/round_call_24"
-                android:backgroundTint="@color/lightblue"/>
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="25dp"
+                android:layout_marginBottom="10dp"
+                android:backgroundTint="@color/lightblue"
+                tools:ignore="SpeakableTextPresentCheck"
+                app:srcCompat="@drawable/round_call_24"
+                app:fabCustomSize="45dp"
+                app:fabSize="auto"/>
 
         </RelativeLayout>
     </RelativeLayout>
