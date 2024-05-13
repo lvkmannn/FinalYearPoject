@@ -96,7 +96,7 @@ public class SosAdapter extends BaseAdapter implements Filterable {
                 } else {
                     List<FireDepartment> filteredList = new ArrayList<>();
                     for (FireDepartment fireDepartment : mData) {
-                        if (fireDepartment.getName().toLowerCase().contains(charString)) {
+                        if (fireDepartment.getName().toLowerCase().contains(charString) || fireDepartment.getDistrict().toLowerCase().contains(charString)) {
                             filteredList.add(fireDepartment);
                         }
                     }
