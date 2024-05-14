@@ -62,7 +62,11 @@ public class HomeFragment extends Fragment implements Filterable{
         search_bar = view.findViewById(R.id.search_bar);
 
         OkHttpClient okHttpClient = new OkHttpClient();
+        // Home wifi
         Request request = new Request.Builder().url("http://192.168.1.101:5000/get-items-by-current-hour").build();
+
+        // Personal hotspot
+        // Request request = new Request.Builder().url("http://172.20.10.3:5000/get-items-by-current-hour").build();
 
         // Make asynchronous call
         okHttpClient.newCall(request).enqueue(new Callback() {
@@ -73,7 +77,15 @@ public class HomeFragment extends Fragment implements Filterable{
                 if (e!=null){
                     message = e.getMessage();
                 }
-                Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                // Ensure Toast is shown on the main UI thread
+                final String finalMessage = message;
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity(), finalMessage, Toast.LENGTH_SHORT).show();
+                    }
+                });
+
             }
 
             @Override

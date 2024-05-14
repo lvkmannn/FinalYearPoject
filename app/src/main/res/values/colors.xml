@@ -4,4 +4,8 @@
     <color name="white">#FFFFFFFF</color>
     <color name="lightblue">#ADD8E6</color>
     <color name="lightgreen">#90EE90</color>
+    <color name="royalblue">#4169E1</color>
+    <color name="lemonyellow">#FAFA33</color>
+    <color name="orange">#FFA500</color>
+    <color name="redpastel">#FAA0A0</color>
 </resources>
