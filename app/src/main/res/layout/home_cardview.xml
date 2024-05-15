@@ -96,6 +96,13 @@
                     android:textSize="18sp"/>
 
             </RelativeLayout>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="View Graph"
+                android:id="@+id/btnGraph"/>
         </LinearLayout>
     </LinearLayout>
 
