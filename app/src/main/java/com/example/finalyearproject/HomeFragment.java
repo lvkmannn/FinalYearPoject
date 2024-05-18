@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,17 +63,15 @@ public class HomeFragment extends Fragment implements Filterable{
         search_bar = view.findViewById(R.id.search_bar);
 
         OkHttpClient okHttpClient = new OkHttpClient();
-        // Home wifi
-        Request request = new Request.Builder().url("http://192.168.1.101:5000/get-items-by-current-hour").build();
 
-        // Personal hotspot
-        // Request request = new Request.Builder().url("http://172.20.10.3:5000/get-items-by-current-hour").build();
+        Request request = new Request.Builder().url("http://10.0.2.2:5000/get-items-by-current-hour").header("Connection", "close").build();
 
         // Make asynchronous call
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 String message = "Network Error";
+                Log.e("NetworkError", "Failed to connect to 127.0.0.1:5000", e);
 
                 if (e!=null){
                     message = e.getMessage();
