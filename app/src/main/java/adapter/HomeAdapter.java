@@ -27,6 +27,7 @@ import com.anychart.charts.Cartesian;
 import com.anychart.data.Mapping;
 import com.anychart.data.Set;
 import com.anychart.enums.Anchor;
+import com.anychart.enums.Layout;
 import com.anychart.enums.MarkerType;
 import com.anychart.enums.TooltipPositionMode;
 import com.anychart.graphics.vector.Stroke;
@@ -218,6 +219,27 @@ public class HomeAdapter extends BaseAdapter implements Filterable {
         cartesian.legend().enabled(true);
         cartesian.legend().fontSize(13d);
         cartesian.legend().padding(0d, 0d, 10d, 0d);
+
+        // Add line markers with different colors
+        cartesian.lineMarker(0)
+                .value(infoWeather.getNormal())
+                .stroke("2 #00FF00")  // Green color for normal
+                .layout(Layout.HORIZONTAL);
+
+        cartesian.lineMarker(1)
+                .value(infoWeather.getAlert())
+                .stroke("2 #FFFF00")  // Yellow color for alert
+                .layout(Layout.HORIZONTAL);
+
+        cartesian.lineMarker(2)
+                .value(infoWeather.getWarning())
+                .stroke("2 #FFA500")  // Orange color for warning
+                .layout(Layout.HORIZONTAL);
+
+        cartesian.lineMarker(3)
+                .value(infoWeather.getDanger())
+                .stroke("2 #FF0000")  // Red color for danger
+                .layout(Layout.HORIZONTAL);
 
         anyChartView.setChart(cartesian);
     }
