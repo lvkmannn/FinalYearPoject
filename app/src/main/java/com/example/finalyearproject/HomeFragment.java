@@ -125,6 +125,8 @@ public class HomeFragment extends Fragment implements Filterable{
                 }
             }
         });
+
+        // Search bar - for searching the location
         search_bar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
