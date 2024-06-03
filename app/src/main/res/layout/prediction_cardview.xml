@@ -32,21 +32,18 @@
             android:textStyle="bold"
             android:layout_marginBottom="10dp"/>
 
-        <LinearLayout
-            android:id="@+id/linearLayoutWL"
-            android:layout_width="380dp"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="300dp"
-            android:orientation="vertical"
-            android:background="@color/white"
-            android:layout_marginEnd="10dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginBottom="10dp">
+            android:id="@+id/rlWL"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@color/white">
 
             <com.anychart.AnyChartView
                 android:id="@+id/any_chart_view"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@+id/btnClose" />
+                android:layout_height="match_parent"/>
 
             <ProgressBar
                 android:id="@+id/progress_bar"
@@ -54,9 +51,10 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"/>
 
-        </LinearLayout>
+        </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/alertLayout"
             android:layout_width="380dp"
             android:layout_height="wrap_content"
             android:background="@color/green"
@@ -92,11 +90,14 @@
                 android:id="@+id/textWL"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Predicted Water Level"
                 android:layout_below="@id/textPrediction"
-                android:textSize="20sp"
                 android:layout_centerHorizontal="true"
-                android:layout_margin="5dp"/>
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginBottom="5dp"
+                android:text="Predicted Water Level"
+                android:textSize="20sp" />
 
         </RelativeLayout>
 

@@ -3,14 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".SosFragment"
     android:orientation="vertical">
 
     <ListView
+        android:id="@+id/listPredInfo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/listWeatherInfo"
         android:dividerHeight="15dp"
         android:divider="#FFFFFF"
         android:layout_margin="10dp"/>
