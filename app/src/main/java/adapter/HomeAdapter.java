@@ -40,6 +40,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import model.GraphHome;
 import model.InfoWeather;
@@ -131,24 +132,39 @@ public class HomeAdapter extends BaseAdapter implements Filterable {
                 dialog.setContentView(R.layout.graph_popup);
 
                 dataGraph.clear(); // Clear previous data
-                OkHttpClient okHttpClient = new OkHttpClient();
-                Request request = new Request.Builder().url("http://10.0.2.2:5000/get-items-by-id-for-last-12-hours/" + infoWeather.getId()).header("Connection", "close").build();
+
+                OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                        .connectTimeout(30, TimeUnit.SECONDS)
+                        .writeTimeout(30, TimeUnit.SECONDS)
+                        .readTimeout(30, TimeUnit.SECONDS)
+                        .build();
+
+                Request request = new Request.Builder()
+                        .url("http://10.0.2.2:5000/get-items-by-id-for-last-12-hours/" + infoWeather.getId())
+                        .header("Connection", "close")
+                        .build();
 
                 okHttpClient.newCall(request).enqueue(new Callback() {
                     @Override
                     public void onFailure(@NonNull Call call, @NonNull IOException e) {
                         Handler handler = new Handler(Looper.getMainLooper());
                         handler.post(() -> {
-                            String message = "Cannot fetch the data from the API";
-                            if (e != null) {
-                                message = e.getMessage();
-                            }
+                            String message = "Cannot fetch the data from the API: " + e.getMessage();
                             Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
                         });
                     }
 
                     @Override
                     public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                        if (!response.isSuccessful()) {
+                            Handler handler = new Handler(Looper.getMainLooper());
+                            handler.post(() -> {
+                                String message = "Unexpected response code: " + response.code();
+                                Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
+                            });
+                            return;
+                        }
+
                         try {
                             JSONArray jsonArray = new JSONArray(response.body().string());
                             for (int i = 0; i < jsonArray.length(); i++) {
@@ -165,7 +181,11 @@ public class HomeAdapter extends BaseAdapter implements Filterable {
                                 setupGraph(dialog, infoWeather);
                             });
                         } catch (JSONException e) {
-                            throw new RuntimeException(e);
+                            Handler handler = new Handler(Looper.getMainLooper());
+                            handler.post(() -> {
+                                String message = "JSON parsing error: " + e.getMessage();
+                                Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
+                            });
                         }
                     }
                 });
@@ -181,6 +201,7 @@ public class HomeAdapter extends BaseAdapter implements Filterable {
                 dialog.show();
             }
         });
+
 
         return v;
     }
