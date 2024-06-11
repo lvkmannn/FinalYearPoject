@@ -64,6 +64,12 @@ public class HomeAdapter extends BaseAdapter implements Filterable {
         this.dataGraph = new ArrayList<>();
     }
 
+    public void setData(List<InfoWeather> data) {
+        this.mData = data;
+        this.mDataFiltered = data;
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getCount() {
         return mDataFiltered.size();
@@ -134,9 +140,9 @@ public class HomeAdapter extends BaseAdapter implements Filterable {
                 dataGraph.clear(); // Clear previous data
 
                 OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                        .connectTimeout(30, TimeUnit.SECONDS)
-                        .writeTimeout(30, TimeUnit.SECONDS)
-                        .readTimeout(30, TimeUnit.SECONDS)
+                        .connectTimeout(60, TimeUnit.SECONDS)
+                        .writeTimeout(60, TimeUnit.SECONDS)
+                        .readTimeout(60, TimeUnit.SECONDS)
                         .build();
 
                 Request request = new Request.Builder()
@@ -201,7 +207,6 @@ public class HomeAdapter extends BaseAdapter implements Filterable {
                 dialog.show();
             }
         });
-
 
         return v;
     }
@@ -301,3 +306,4 @@ public class HomeAdapter extends BaseAdapter implements Filterable {
         }
     }
 }
+
