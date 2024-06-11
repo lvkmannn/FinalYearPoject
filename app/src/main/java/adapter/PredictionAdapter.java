@@ -41,6 +41,10 @@ public class PredictionAdapter extends BaseAdapter {
         this.mData = mData;
     }
 
+    public void setData(List<InfoPredict> newData) {
+        this.mData = newData;
+    }
+
     @Override
     public int getCount() {
         return mData.size();
