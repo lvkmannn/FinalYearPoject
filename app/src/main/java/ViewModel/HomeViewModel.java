@@ -1,5 +1,7 @@
 package ViewModel;
 
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -48,8 +50,9 @@ public class HomeViewModel extends ViewModel {
             return;
         }
 
+        //http://10.0.2.2:5000
         Request request = new Request.Builder()
-                .url("http://10.0.2.2:5000/get-items-by-current-hour")
+                .url("https://lvkmannn.pythonanywhere.com/get-items-by-current-hour")
                 .header("Connection", "close")
                 .build();
 

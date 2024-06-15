@@ -146,7 +146,7 @@ public class HomeAdapter extends BaseAdapter implements Filterable {
                         .build();
 
                 Request request = new Request.Builder()
-                        .url("http://10.0.2.2:5000/get-items-by-id-for-last-12-hours/" + infoWeather.getId())
+                        .url("https://lvkmannn.pythonanywhere.com/get-items-by-id-for-last-12-hours/" + infoWeather.getId())
                         .header("Connection", "close")
                         .build();
 

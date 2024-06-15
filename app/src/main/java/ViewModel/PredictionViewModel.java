@@ -39,7 +39,7 @@ public class PredictionViewModel extends ViewModel {
         }
 
         Request request = new Request.Builder()
-                .url("http://10.0.2.2:5000/get-predictions-by-today-date")
+                .url("https://lvkmannn.pythonanywhere.com/get-predictions-by-today-date")
                 .header("Connection", "close")
                 .build();
 
