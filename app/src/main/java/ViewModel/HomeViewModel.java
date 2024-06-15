@@ -1,7 +1,5 @@
 package ViewModel;
 
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -12,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import model.InfoWeather;
+import model.InfoHome;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -23,7 +21,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class HomeViewModel extends ViewModel {
-    private final MutableLiveData<List<InfoWeather>> weatherData = new MutableLiveData<>();
+    private final MutableLiveData<List<InfoHome>> weatherData = new MutableLiveData<>();
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private final OkHttpClient okHttpClient;
     private boolean isDataLoaded = false;
@@ -37,7 +35,7 @@ public class HomeViewModel extends ViewModel {
                 .build();
     }
 
-    public LiveData<List<InfoWeather>> getWeatherData() {
+    public LiveData<List<InfoHome>> getWeatherData() {
         return weatherData;
     }
 
@@ -70,7 +68,7 @@ public class HomeViewModel extends ViewModel {
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 try {
                     JSONArray jsonArray = new JSONArray(response.body().string());
-                    List<InfoWeather> dataList = new ArrayList<>();
+                    List<InfoHome> dataList = new ArrayList<>();
 
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -89,7 +87,7 @@ public class HomeViewModel extends ViewModel {
                         double hourlyRainfall = jsonObject.getDouble("hourlyRainfall");
                         double todayRainfall = jsonObject.getDouble("todayRainfall");
 
-                        InfoWeather data = new InfoWeather(id, latitude, longitude, normal, alert, warning, danger, hourlyRainfall, todayRainfall, waterLevel, stationId, districtName, stationName, lastUpdate);
+                        InfoHome data = new InfoHome(id, latitude, longitude, normal, alert, warning, danger, hourlyRainfall, todayRainfall, waterLevel, stationId, districtName, stationName, lastUpdate);
                         dataList.add(data);
                     }
                     weatherData.postValue(dataList);

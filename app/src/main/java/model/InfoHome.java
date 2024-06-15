@@ -1,16 +1,16 @@
 package model;
 
-public class InfoWeather {
+public class InfoHome {
     int id;
 
     double latitude, longitude, normal, alert, warning, danger, hourlyRainfall, todayRainfall, waterLevel;
     String stationId, districtName, stationName, lastUpdate;
 
-    public InfoWeather(){
+    public InfoHome(){
 
     }
 
-    public InfoWeather(int id, double latitude, double longitude, double normal, double alert, double warning, double danger, double hourlyRainfall, double todayRainfall, double waterLevel, String stationId, String districtName, String stationName, String lastUpdate) {
+    public InfoHome(int id, double latitude, double longitude, double normal, double alert, double warning, double danger, double hourlyRainfall, double todayRainfall, double waterLevel, String stationId, String districtName, String stationName, String lastUpdate) {
         this.id = id;
         this.latitude = latitude;
         this.longitude = longitude;

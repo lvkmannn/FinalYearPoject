@@ -20,7 +20,7 @@ import java.util.List;
 
 import ViewModel.HomeViewModel;
 import adapter.HomeAdapter;
-import model.InfoWeather;
+import model.InfoHome;
 
 public class HomeFragment extends Fragment implements Filterable {
 
@@ -47,10 +47,10 @@ public class HomeFragment extends Fragment implements Filterable {
 
         viewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
 
-        viewModel.getWeatherData().observe(getViewLifecycleOwner(), new Observer<List<InfoWeather>>() {
+        viewModel.getWeatherData().observe(getViewLifecycleOwner(), new Observer<List<InfoHome>>() {
             @Override
-            public void onChanged(List<InfoWeather> infoWeathers) {
-                adapter.setData(infoWeathers);
+            public void onChanged(List<InfoHome> infoHomes) {
+                adapter.setData(infoHomes);
                 adapter.notifyDataSetChanged();
             }
         });

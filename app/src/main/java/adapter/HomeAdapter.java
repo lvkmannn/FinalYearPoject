@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import model.GraphHome;
-import model.InfoWeather;
+import model.InfoHome;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -53,18 +53,18 @@ import okhttp3.Response;
 public class HomeAdapter extends BaseAdapter implements Filterable {
 
     private final Context mContext;
-    private List<InfoWeather> mData;
-    private List<InfoWeather> mDataFiltered;
+    private List<InfoHome> mData;
+    private List<InfoHome> mDataFiltered;
     private List<GraphHome> dataGraph;
 
-    public HomeAdapter(Context mContext, List<InfoWeather> mData) {
+    public HomeAdapter(Context mContext, List<InfoHome> mData) {
         this.mContext = mContext;
         this.mData = mData;
         this.mDataFiltered = mData;
         this.dataGraph = new ArrayList<>();
     }
 
-    public void setData(List<InfoWeather> data) {
+    public void setData(List<InfoHome> data) {
         this.mData = data;
         this.mDataFiltered = data;
         notifyDataSetChanged();
@@ -104,26 +104,26 @@ public class HomeAdapter extends BaseAdapter implements Filterable {
 
         LinearLayout linearLayoutWL = v.findViewById(R.id.linearLayoutWL);
 
-        InfoWeather infoWeather = mDataFiltered.get(position);
-        textDistrict.setText(infoWeather.getDistrictName());
-        textLocation.setText(infoWeather.getStationName());
-        textWL.setText("Water Level: " + infoWeather.getWaterLevel() + " m");
-        textHourlyRainfall.setText("Total Rainfall (hourly): " + infoWeather.getHourlyRainfall() + " mm");
-        textTodayRainfall.setText("Total Rainfall (day): " + infoWeather.getTodayRainfall() + " mm");
+        InfoHome infoHome = mDataFiltered.get(position);
+        textDistrict.setText(infoHome.getDistrictName());
+        textLocation.setText(infoHome.getStationName());
+        textWL.setText("Water Level: " + infoHome.getWaterLevel() + " m");
+        textHourlyRainfall.setText("Total Rainfall (hourly): " + infoHome.getHourlyRainfall() + " mm");
+        textTodayRainfall.setText("Total Rainfall (day): " + infoHome.getTodayRainfall() + " mm");
 
-        if (infoWeather.getWaterLevel() < infoWeather.getAlert()) {
+        if (infoHome.getWaterLevel() < infoHome.getAlert()) {
             textStatus.setText("Status: Normal");
             linearLayoutWL.setBackgroundResource(R.color.lightgreen);
             imageView.setImageResource(R.drawable.safe_24);
-        } else if (infoWeather.getWaterLevel() >= infoWeather.getAlert() && infoWeather.getWaterLevel() < infoWeather.getWarning()) {
+        } else if (infoHome.getWaterLevel() >= infoHome.getAlert() && infoHome.getWaterLevel() < infoHome.getWarning()) {
             textStatus.setText("Status: Alert");
             linearLayoutWL.setBackgroundResource(R.color.lemonyellow);
             imageView.setImageResource(R.drawable.baseline_crisis_alert_24);
-        } else if (infoWeather.getWaterLevel() >= infoWeather.getWarning() && infoWeather.getWaterLevel() < infoWeather.getDanger()) {
+        } else if (infoHome.getWaterLevel() >= infoHome.getWarning() && infoHome.getWaterLevel() < infoHome.getDanger()) {
             textStatus.setText("Status: Warning");
             linearLayoutWL.setBackgroundResource(R.color.orange);
             imageView.setImageResource(R.drawable.baseline_warning_24);
-        } else if (infoWeather.getWaterLevel() >= infoWeather.getDanger()) {
+        } else if (infoHome.getWaterLevel() >= infoHome.getDanger()) {
             textStatus.setText("Status: Danger");
             linearLayoutWL.setBackgroundResource(R.color.redpastel);
             imageView.setImageResource(R.drawable.danger_24);
@@ -146,7 +146,7 @@ public class HomeAdapter extends BaseAdapter implements Filterable {
                         .build();
 
                 Request request = new Request.Builder()
-                        .url("https://lvkmannn.pythonanywhere.com/get-items-by-id-for-last-12-hours/" + infoWeather.getId())
+                        .url("https://lvkmannn.pythonanywhere.com/get-items-by-id-for-last-12-hours/" + infoHome.getId())
                         .header("Connection", "close")
                         .build();
 
@@ -184,7 +184,7 @@ public class HomeAdapter extends BaseAdapter implements Filterable {
                             }
                             Handler handler = new Handler(Looper.getMainLooper());
                             handler.post(() -> {
-                                setupGraph(dialog, infoWeather);
+                                setupGraph(dialog, infoHome);
                             });
                         } catch (JSONException e) {
                             Handler handler = new Handler(Looper.getMainLooper());
@@ -211,7 +211,7 @@ public class HomeAdapter extends BaseAdapter implements Filterable {
         return v;
     }
 
-    private void setupGraph(Dialog dialog, InfoWeather infoWeather) {
+    private void setupGraph(Dialog dialog, InfoHome infoHome) {
         AnyChartView anyChartView = dialog.findViewById(R.id.any_chart_view);
         anyChartView.setProgressBar(dialog.findViewById(R.id.progress_bar));
 
@@ -223,7 +223,7 @@ public class HomeAdapter extends BaseAdapter implements Filterable {
         cartesian.crosshair().yLabel(true).yStroke((Stroke) null, null, null, (String) null, (String) null);
 
         cartesian.tooltip().positionMode(TooltipPositionMode.POINT);
-        cartesian.title("12 Hours Water Level In Station " + infoWeather.getStationName());
+        cartesian.title("12 Hours Water Level In Station " + infoHome.getStationName());
         cartesian.yAxis(0).title("Water Level (m)");
         cartesian.xAxis(0).labels().padding(5d, 5d, 5d, 5d);
 
@@ -237,7 +237,7 @@ public class HomeAdapter extends BaseAdapter implements Filterable {
         Mapping seriesMapping = set.mapAs("{ x: 'x', value: 'value'}");
 
         Line series1 = cartesian.line(seriesMapping);
-        series1.name(infoWeather.getStationName());
+        series1.name(infoHome.getStationName());
         series1.hovered().markers().enabled(true);
         series1.hovered().markers().type(MarkerType.CIRCLE).size(4d);
         series1.tooltip().position("right").anchor(Anchor.LEFT_CENTER).offsetX(5).offsetY(5);
@@ -248,22 +248,22 @@ public class HomeAdapter extends BaseAdapter implements Filterable {
 
         // Add line markers with different colors
         cartesian.lineMarker(0)
-                .value(infoWeather.getNormal())
+                .value(infoHome.getNormal())
                 .stroke("2 #00FF00")  // Green color for normal
                 .layout(Layout.HORIZONTAL);
 
         cartesian.lineMarker(1)
-                .value(infoWeather.getAlert())
+                .value(infoHome.getAlert())
                 .stroke("2 #FFFF00")  // Yellow color for alert
                 .layout(Layout.HORIZONTAL);
 
         cartesian.lineMarker(2)
-                .value(infoWeather.getWarning())
+                .value(infoHome.getWarning())
                 .stroke("2 #FFA500")  // Orange color for warning
                 .layout(Layout.HORIZONTAL);
 
         cartesian.lineMarker(3)
-                .value(infoWeather.getDanger())
+                .value(infoHome.getDanger())
                 .stroke("2 #FF0000")  // Red color for danger
                 .layout(Layout.HORIZONTAL);
 
@@ -279,10 +279,10 @@ public class HomeAdapter extends BaseAdapter implements Filterable {
                 if (charString.isEmpty()) {
                     mDataFiltered = mData;
                 } else {
-                    List<InfoWeather> filteredList = new ArrayList<>();
-                    for (InfoWeather infoWeather : mData) {
-                        if (infoWeather.getStationName().toLowerCase().contains(charString) || infoWeather.getDistrictName().toLowerCase().contains(charString)) {
-                            filteredList.add(infoWeather);
+                    List<InfoHome> filteredList = new ArrayList<>();
+                    for (InfoHome infoHome : mData) {
+                        if (infoHome.getStationName().toLowerCase().contains(charString) || infoHome.getDistrictName().toLowerCase().contains(charString)) {
+                            filteredList.add(infoHome);
                         }
                     }
                     mDataFiltered = filteredList;
@@ -294,7 +294,7 @@ public class HomeAdapter extends BaseAdapter implements Filterable {
 
             @Override
             protected void publishResults(CharSequence constraint, FilterResults results) {
-                mDataFiltered = (ArrayList<InfoWeather>) results.values;
+                mDataFiltered = (ArrayList<InfoHome>) results.values;
                 notifyDataSetChanged();
             }
         };
