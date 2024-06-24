@@ -2,4 +2,16 @@
     <string name="app_name">FinalYearProject</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string-array name="districtArray">
+        <item>Select District</item>
+        <item>Gombak</item>
+        <item>Hulu Langat</item>
+        <item>Hulu Selangor</item>
+        <item>Klang</item>
+        <item>Kuala Langat</item>
+        <item>Kuala Selangor</item>
+        <item>Petaling</item>
+        <item>Sabak Bernam</item>
+        <item>Sepang</item>
+    </string-array>
 </resources>

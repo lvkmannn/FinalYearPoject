@@ -16,7 +16,7 @@ import com.google.firebase.messaging.RemoteMessage;
 
 public class PushNotificationService extends FirebaseMessagingService {
 
-    // Token : euyb_tJMRDqtKPJ3gyYMgM:APA91bGqfE3QJh8qy9ajMV6Y0l6UcYmtRJp1pjnxrjnJwJnqNUnnab_q49T8gx-2hU6Qp9LegpXpDVhiUR8d65BNNdw8ZbSnbjhEg9pzXg-S8B5i_lw4OuEO6cmP2bAM9bBwQrHJEoBp
+    // Token : e_7gvxIzXNU:APA91bGL6gHM5g6Juwf_aHBNELqbLNOTpIakHP1XRwhgFJ4WDZs2OLVua4aWb7ISH91eypu2crAIiNALvg2TaJzCQPijG4jdgHEPvccWvhQIn1O92GmZYKQmszg_AzUf8Jw42Qx6FB44
     @Override
     public void onNewToken(@NonNull String token) {
         Log.d("Token", "Refreshed token: " + token);
@@ -62,13 +62,9 @@ public class PushNotificationService extends FirebaseMessagingService {
                 .setContentIntent(pendingIntent);
 
 
-        NotificationManager notificationManager
-                = (NotificationManager) getSystemService(
-                Context.NOTIFICATION_SERVICE);
-        if (Build.VERSION.SDK_INT
-                >= Build.VERSION_CODES.O) {
-            NotificationChannel notificationChannel
-                    = new NotificationChannel(
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel = new NotificationChannel(
                     channel_id, "notification_channel",
                     NotificationManager.IMPORTANCE_HIGH);
             notificationManager.createNotificationChannel(

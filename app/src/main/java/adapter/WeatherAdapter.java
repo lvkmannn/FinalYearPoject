@@ -48,6 +48,7 @@ public class WeatherAdapter extends BaseAdapter {
         }
 
         TextView locationText = v.findViewById(R.id.locationText);
+        TextView dateText = v.findViewById(R.id.dateText);
         TextView morningText = v.findViewById(R.id.morningText);
         TextView afternoonText = v.findViewById(R.id.afternoonText);
         TextView nightText = v.findViewById(R.id.nightText);
@@ -61,6 +62,7 @@ public class WeatherAdapter extends BaseAdapter {
 
         Weather weather = mData.get(position);
         locationText.setText(weather.getLocation_name());
+        dateText.setText(weather.getDate());
         morningText.setText(weather.getMorning_forecast());
         afternoonText.setText(weather.getAfternoon_forecast());
         nightText.setText(weather.getNight_forecast());
@@ -69,9 +71,9 @@ public class WeatherAdapter extends BaseAdapter {
         minTempText.setText(weather.getMin_temp());
         maxTempText.setText(weather.getMax_temp());
 
-        if (weather.getSummary_forecast().equals("Hujan")){
+        if (weather.getSummary_forecast().toLowerCase().contains("tiada hujan".toLowerCase())) {
             imageView.setImageResource(R.drawable.sunny);
-        } else {
+        } else if (weather.getSummary_forecast().toLowerCase().contains("ribut petir".toLowerCase())) {
             imageView.setImageResource(R.drawable.thunderstorm);
         }
 
