@@ -108,22 +108,22 @@ public class PredictionAdapter extends BaseAdapter {
             String[] daysOfWeek = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
             String predictedDay = daysOfWeek[(dayOfWeek + highestWaterLevelIndex + 1) % 7]; // +1 to start from the next day
 
-            if (highestWaterLevel < 2.4) {
+            if (highestWaterLevel < infoPredict.getAlert()) {
                 textAlert.setText("Status: Normal");
                 textPrediction.setText("No flood is predicted within 3 days");
                 textWL.setText("Highest: " + formattedWaterLevel + " Meter");
                 alertLayout.setBackgroundResource(R.color.lightgreen);
-            } else if (highestWaterLevel >= 2.4 && highestWaterLevel < 2.7) {
+            } else if (highestWaterLevel >= infoPredict.getAlert() && highestWaterLevel < infoPredict.getWarning()) {
                 textAlert.setText("Status: Alert");
                 textPrediction.setText("No flood is predicted within 3 days");
                 textWL.setText("Highest: " + formattedWaterLevel + " Meter");
                 alertLayout.setBackgroundResource(R.color.lemonyellow);
-            } else if (highestWaterLevel >= 2.7 && highestWaterLevel <= 3) {
+            } else if (highestWaterLevel >= infoPredict.getWarning() && highestWaterLevel <= infoPredict.getDanger()) {
                 textAlert.setText("Status: Warning");
                 textPrediction.setText("No flood is predicted within 3 days");
                 textWL.setText("Highest: " + formattedWaterLevel + " Meter");
                 alertLayout.setBackgroundResource(R.color.orange);
-            } else if (highestWaterLevel > 3) {
+            } else if (highestWaterLevel > infoPredict.getDanger()) {
                 textAlert.setText("Status: Danger");
                 textPrediction.setText("Flood is predicted on " + predictedDay);
                 textWL.setText("Flood Level: " + floodLevelString + " Meter");

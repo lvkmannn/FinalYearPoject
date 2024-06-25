@@ -61,9 +61,16 @@ public class PredictionViewModel extends ViewModel {
 
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        double id = jsonObject.getDouble("id");
                         String district = jsonObject.getString("district");
                         String location = jsonObject.getString("location");
+                        double latitude = jsonObject.getDouble("latitude");
+                        double longitude = jsonObject.getDouble("longitude");
                         String date = jsonObject.getString("date");
+                        double normal = jsonObject.getDouble("normal");
+                        double alert = jsonObject.getDouble("alert");
+                        double warning = jsonObject.getDouble("warning");
+                        double danger = jsonObject.getDouble("danger");
                         double testLoss = jsonObject.getDouble("testLoss");
                         double MAE = jsonObject.getDouble("MAE");
                         double MSE = jsonObject.getDouble("MSE");
@@ -72,7 +79,7 @@ public class PredictionViewModel extends ViewModel {
                         double day2 = jsonObject.getDouble("day2");
                         double day3 = jsonObject.getDouble("day3");
 
-                        InfoPredict data = new InfoPredict(date, district, location, testLoss, MAE, MSE, RMSE, day1, day2, day3);
+                        InfoPredict data = new InfoPredict(date, district, location, id, testLoss, MAE, MSE, RMSE, day1, day2, day3, normal, alert, warning, danger, latitude, longitude);
                         dataList.add(data);
                     }
                     predictions.postValue(dataList);

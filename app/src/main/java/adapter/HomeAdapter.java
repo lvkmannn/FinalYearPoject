@@ -242,6 +242,10 @@ public class HomeAdapter extends BaseAdapter implements Filterable {
         series1.hovered().markers().type(MarkerType.CIRCLE).size(4d);
         series1.tooltip().position("right").anchor(Anchor.LEFT_CENTER).offsetX(5).offsetY(5);
 
+        // Enable markers for each data point
+        series1.markers().enabled(true);
+        series1.markers().type(MarkerType.CIRCLE).size(5d);  // Customize marker type and size as needed
+
         cartesian.legend().enabled(true);
         cartesian.legend().fontSize(13d);
         cartesian.legend().padding(0d, 0d, 10d, 0d);
@@ -269,6 +273,7 @@ public class HomeAdapter extends BaseAdapter implements Filterable {
 
         anyChartView.setChart(cartesian);
     }
+
 
     @Override
     public Filter getFilter() {
