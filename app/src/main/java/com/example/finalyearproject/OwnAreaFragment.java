@@ -38,6 +38,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import ViewModel.HomeViewModel;
 import ViewModel.PredictionViewModel;
@@ -54,10 +55,14 @@ public class OwnAreaFragment extends Fragment implements OnMapReadyCallback {
     private PredictionViewModel predictionViewModel;
     private HomeViewModel homeViewModel;
     private List<InfoHome> homeDataList;
+    private List<InfoPredict> predictionDataList;
+    private Bundle savedInstanceState;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        this.savedInstanceState = savedInstanceState;
+        setRetainInstance(true);
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_own_area, container, false);
     }
@@ -90,7 +95,13 @@ public class OwnAreaFragment extends Fragment implements OnMapReadyCallback {
         predictionViewModel = new ViewModelProvider(this).get(PredictionViewModel.class);
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
-        predictionViewModel.getPredictions().observe(getViewLifecycleOwner(), this::addMarkers);
+        predictionViewModel.getPredictions().observe(getViewLifecycleOwner(), predictions -> {
+            predictionDataList = predictions;
+            if (map != null) {
+                addMarkers(predictions);
+            }
+        });
+
         homeViewModel.getWeatherData().observe(getViewLifecycleOwner(), this::updateHomeData);
 
         predictionViewModel.getErrorMessage().observe(getViewLifecycleOwner(), error ->
@@ -142,11 +153,20 @@ public class OwnAreaFragment extends Fragment implements OnMapReadyCallback {
         map.getUiSettings().setZoomControlsEnabled(true);
         map.getUiSettings().setCompassEnabled(true);
         setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+        // Re-add markers when the map is ready
+        if (predictionDataList != null) {
+            addMarkers(predictionDataList);
+        }
     }
 
     private void addMarkers(List<InfoPredict> predictions) {
         if (map != null) {
             map.clear();
+            if (homeDataList == null) {
+                Log.d(TAG, "addMarkers: homeDataList is null, skipping marker addition.");
+                return;
+            }
             for (InfoPredict info : predictions) {
                 LatLng latLng = new LatLng(info.getLatitude(), info.getLongitude());
                 double waterLevel = getWaterLevelForLocation(info.getLatitude(), info.getLongitude());
@@ -189,7 +209,7 @@ public class OwnAreaFragment extends Fragment implements OnMapReadyCallback {
                     }
 
                     @Override
-                    public View getInfoContents(Marker marker) {
+                    public View getInfoContents(@NonNull Marker marker) {
                         LinearLayout info = new LinearLayout(getContext());
                         info.setOrientation(LinearLayout.VERTICAL);
 
@@ -199,11 +219,24 @@ public class OwnAreaFragment extends Fragment implements OnMapReadyCallback {
                         title.setTypeface(null, Typeface.BOLD);
                         title.setText(marker.getTitle());
 
+                        // Get current date and time in Malaysian time zone
+                        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Kuala_Lumpur"));
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm dd/MM/yyyy", Locale.getDefault());
+                        dateFormat.setTimeZone(TimeZone.getTimeZone("Asia/Kuala_Lumpur")); // Ensure the formatter uses the correct time zone
+                        String currentTime = dateFormat.format(calendar.getTime());
+
+                        TextView subtitleView = new TextView(getContext());
+                        subtitleView.setTextColor(Color.GRAY);
+                        subtitleView.setGravity(Gravity.CENTER);
+                        subtitleView.setTypeface(null, Typeface.ITALIC);
+                        subtitleView.setText("As of " + currentTime);
+
                         TextView snippet = new TextView(getContext());
-                        snippet.setTextColor(Color.GRAY);
+                        snippet.setTextColor(Color.DKGRAY);
                         snippet.setText(marker.getSnippet());
 
                         info.addView(title);
+                        info.addView(subtitleView);
                         info.addView(snippet);
 
                         return info;
@@ -216,14 +249,21 @@ public class OwnAreaFragment extends Fragment implements OnMapReadyCallback {
     private void updateHomeData(List<InfoHome> homeData) {
         this.homeDataList = homeData;
         Log.d(TAG, "updateHomeData: Received home data with size " + homeData.size());
+        if (map != null && predictionDataList != null) {
+            addMarkers(predictionDataList);
+        }
     }
 
     private double getWaterLevelForLocation(double latitude, double longitude) {
-        for (InfoHome info : homeDataList) {
-            if (info.getLatitude() == latitude) {
-                Log.d(TAG, "getWaterLevelForLocation: Found matching water level for latitude " + latitude + " with water level " + info.getWaterLevel());
-                return info.getWaterLevel();
+        if (homeDataList != null) { // Add null check
+            for (InfoHome info : homeDataList) {
+                if (info.getLatitude() == latitude && info.getLongitude() == longitude) {
+                    Log.d(TAG, "getWaterLevelForLocation: Found matching water level for latitude " + latitude + " with water level " + info.getWaterLevel());
+                    return info.getWaterLevel();
+                }
             }
+        } else {
+            Log.d(TAG, "getWaterLevelForLocation: homeDataList is null");
         }
         Log.d(TAG, "getWaterLevelForLocation: No matching water level found for latitude " + latitude);
         return 0.0;
@@ -256,3 +296,5 @@ public class OwnAreaFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 }
+
+
