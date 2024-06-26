@@ -8,12 +8,16 @@ import androidx.lifecycle.ViewModel;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import model.InfoPredict;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,8 +25,17 @@ import org.json.JSONObject;
 public class PredictionViewModel extends ViewModel {
     private final MutableLiveData<List<InfoPredict>> predictions = new MutableLiveData<>();
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
-    private final OkHttpClient okHttpClient = new OkHttpClient();
-    private boolean isDataLoaded = false;  // Flag to check if data is loaded
+    private final OkHttpClient okHttpClient;
+    private volatile boolean isDataLoaded = false;  // Flag to check if data is loaded
+
+    public PredictionViewModel() {
+        // Configure OkHttpClient with increased timeout settings
+        okHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(120, TimeUnit.SECONDS)
+                .writeTimeout(120, TimeUnit.SECONDS)
+                .readTimeout(120, TimeUnit.SECONDS)
+                .build();
+    }
 
     public LiveData<List<InfoPredict>> getPredictions() {
         return predictions;
@@ -55,8 +68,13 @@ public class PredictionViewModel extends ViewModel {
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                try {
-                    JSONArray jsonArray = new JSONArray(response.body().string());
+                try (ResponseBody responseBody = response.body()) {
+                    if (!response.isSuccessful() || responseBody == null) {
+                        throw new IOException("Unexpected code " + response);
+                    }
+
+                    String responseData = responseBody.string();
+                    JSONArray jsonArray = new JSONArray(responseData);
                     List<InfoPredict> dataList = new ArrayList<>();
 
                     for (int i = 0; i < jsonArray.length(); i++) {
@@ -85,10 +103,11 @@ public class PredictionViewModel extends ViewModel {
                     predictions.postValue(dataList);
                     isDataLoaded = true;  // Set flag to true after data is loaded
                 } catch (JSONException e) {
-                    errorMessage.postValue("Data parsing error");
+                    errorMessage.postValue("Data parsing error: " + e.getMessage());
+                } catch (IOException e) {
+                    errorMessage.postValue("Network error: " + e.getMessage());
                 }
             }
         });
     }
 }
-

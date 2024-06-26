@@ -2,21 +2,26 @@ package com.example.finalyearproject;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.SearchView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.SearchView;
-import android.widget.Toast;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -25,17 +30,30 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
+
+import ViewModel.HomeViewModel;
+import ViewModel.PredictionViewModel;
+import model.InfoHome;
+import model.InfoPredict;
 
 public class OwnAreaFragment extends Fragment implements OnMapReadyCallback {
 
+    private static final String TAG = "OwnAreaFragment";
     private GoogleMap map;
     private final int FINE_PERMISSION_CODE = 1;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private SearchView mapSearchView;
+    private PredictionViewModel predictionViewModel;
+    private HomeViewModel homeViewModel;
+    private List<InfoHome> homeDataList;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -68,6 +86,23 @@ public class OwnAreaFragment extends Fragment implements OnMapReadyCallback {
                 return false;
             }
         });
+
+        predictionViewModel = new ViewModelProvider(this).get(PredictionViewModel.class);
+        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+
+        predictionViewModel.getPredictions().observe(getViewLifecycleOwner(), this::addMarkers);
+        homeViewModel.getWeatherData().observe(getViewLifecycleOwner(), this::updateHomeData);
+
+        predictionViewModel.getErrorMessage().observe(getViewLifecycleOwner(), error ->
+                Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show()
+        );
+
+        homeViewModel.getErrorMessage().observe(getViewLifecycleOwner(), error ->
+                Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show()
+        );
+
+        predictionViewModel.fetchPredictions();
+        homeViewModel.fetchWeatherData();
     }
 
     private void searchLocation(String location) {
@@ -86,14 +121,12 @@ public class OwnAreaFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    // To get current location
     private void getCurrentLocation() {
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             map.setMyLocationEnabled(true);
             fusedLocationProviderClient.getLastLocation().addOnSuccessListener(location -> {
                 if (location != null) {
-                    Location currentLocation = location;
-                    LatLng currentLatLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+                    LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15));
                 }
             });
@@ -105,28 +138,112 @@ public class OwnAreaFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         map = googleMap;
-
-        LatLng UiTMJasin = new LatLng(2.222457, 102.4531);
-        map.addMarker(new MarkerOptions()
-                .position(UiTMJasin)
-                .title("UiTM Jasin")
-                .snippet("Information Here"));
-        map.moveCamera(CameraUpdateFactory.newLatLng(UiTMJasin));
-
         getCurrentLocation();
-
-        // For zoom & compass control
         map.getUiSettings().setZoomControlsEnabled(true);
         map.getUiSettings().setCompassEnabled(true);
-
-        // Set the initial map type
         setMapType(GoogleMap.MAP_TYPE_NORMAL);
+    }
+
+    private void addMarkers(List<InfoPredict> predictions) {
+        if (map != null) {
+            map.clear();
+            for (InfoPredict info : predictions) {
+                LatLng latLng = new LatLng(info.getLatitude(), info.getLongitude());
+                double waterLevel = getWaterLevelForLocation(info.getLatitude(), info.getLongitude());
+                String[] days = getNextThreeDays();
+
+                // Determine the highest water level and its corresponding day
+                double highestWaterLevel = Math.max(info.getDay1(), Math.max(info.getDay2(), info.getDay3()));
+                String predictedDay = days[highestWaterLevel == info.getDay1() ? 0 : highestWaterLevel == info.getDay2() ? 1 : 2];
+                String floodLevelString = String.format("%.2f", highestWaterLevel);
+
+                // Create the snippet string based on highest water level
+                String snippet;
+                if (highestWaterLevel > info.getDanger()) {
+                    snippet = String.format("Current Water Level: %.2f Meter\n" +
+                                    "\n3-Day Water Level Prediction: \n" +
+                                    "%s: %.2f Meter\n" +
+                                    "%s: %.2f Meter\n" +
+                                    "%s: %.2f Meter\n" +
+                                    "\nFlood is predicted on %s",
+                            waterLevel, days[0], info.getDay1(), days[1], info.getDay2(), days[2], info.getDay3(), predictedDay);
+                } else {
+                    snippet = String.format("Current Water Level: %.2f Meter\n" +
+                                    "\n3-Day Water Level Prediction: \n" +
+                                    "%s: %.2f Meter\n" +
+                                    "%s: %.2f Meter\n" +
+                                    "%s: %.2f Meter\n" +
+                                    "\nNo flood is predicted within 3 days",
+                            waterLevel, days[0], info.getDay1(), days[1], info.getDay2(), days[2], info.getDay3());
+                }
+
+                map.addMarker(new MarkerOptions()
+                        .position(latLng)
+                        .title(info.getLocation())
+                        .snippet(snippet));
+
+                map.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+                    @Override
+                    public View getInfoWindow(Marker arg0) {
+                        return null;
+                    }
+
+                    @Override
+                    public View getInfoContents(Marker marker) {
+                        LinearLayout info = new LinearLayout(getContext());
+                        info.setOrientation(LinearLayout.VERTICAL);
+
+                        TextView title = new TextView(getContext());
+                        title.setTextColor(Color.BLACK);
+                        title.setGravity(Gravity.CENTER);
+                        title.setTypeface(null, Typeface.BOLD);
+                        title.setText(marker.getTitle());
+
+                        TextView snippet = new TextView(getContext());
+                        snippet.setTextColor(Color.GRAY);
+                        snippet.setText(marker.getSnippet());
+
+                        info.addView(title);
+                        info.addView(snippet);
+
+                        return info;
+                    }
+                });
+            }
+        }
+    }
+
+    private void updateHomeData(List<InfoHome> homeData) {
+        this.homeDataList = homeData;
+        Log.d(TAG, "updateHomeData: Received home data with size " + homeData.size());
+    }
+
+    private double getWaterLevelForLocation(double latitude, double longitude) {
+        for (InfoHome info : homeDataList) {
+            if (info.getLatitude() == latitude) {
+                Log.d(TAG, "getWaterLevelForLocation: Found matching water level for latitude " + latitude + " with water level " + info.getWaterLevel());
+                return info.getWaterLevel();
+            }
+        }
+        Log.d(TAG, "getWaterLevelForLocation: No matching water level found for latitude " + latitude);
+        return 0.0;
     }
 
     public void setMapType(int mapType) {
         if (map != null) {
             map.setMapType(mapType);
         }
+    }
+
+    private String[] getNextThreeDays() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE", Locale.getDefault());
+        Calendar calendar = Calendar.getInstance(Locale.forLanguageTag("ms-MY"));
+        String[] days = new String[3];
+        for (int i = 0; i < 3; i++) {
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
+            days[i] = dateFormat.format(calendar.getTime());
+        }
+        return days;
     }
 
     @Override
