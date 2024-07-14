@@ -296,5 +296,3 @@ public class OwnAreaFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 }
-
-

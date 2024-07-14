@@ -85,7 +85,7 @@ public class PredictionAdapter extends BaseAdapter {
 
             // Check the highest predicted water level among the three days
             double highestWaterLevel = Math.max(infoPredict.getDay1(), Math.max(infoPredict.getDay2(), infoPredict.getDay3()));
-            double floodLevel = highestWaterLevel - 3;
+            double floodLevel = highestWaterLevel - infoPredict.getDanger();
             String floodLevelString = String.format("%.2f", floodLevel);
             // Format the water level values to display only two decimal places
             String formattedWaterLevel = String.format("%.2f", highestWaterLevel);
@@ -195,22 +195,22 @@ public class PredictionAdapter extends BaseAdapter {
 
         // Add line markers with different colors
         cartesian.lineMarker(0)
-                .value(2.2)
+                .value(infoPredict.getNormal())
                 .stroke("2 #00FF00")  // Green color for normal
                 .layout(Layout.HORIZONTAL);
 
         cartesian.lineMarker(1)
-                .value(2.4)
+                .value(infoPredict.getAlert())
                 .stroke("2 #FFFF00")  // Yellow color for alert
                 .layout(Layout.HORIZONTAL);
 
         cartesian.lineMarker(2)
-                .value(2.7)
+                .value(infoPredict.getWarning())
                 .stroke("2 #FFA500")  // Orange color for warning
                 .layout(Layout.HORIZONTAL);
 
         cartesian.lineMarker(3)
-                .value(3)
+                .value(infoPredict.getDanger())
                 .stroke("2 #FF0000")  // Red color for danger
                 .layout(Layout.HORIZONTAL);
 
