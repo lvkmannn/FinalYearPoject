@@ -32,6 +32,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -71,6 +72,8 @@ public class OwnAreaFragment extends Fragment implements OnMapReadyCallback {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mapSearchView = view.findViewById(R.id.mapSearchView);
+        FloatingActionButton currentLocFab = view.findViewById(R.id.currentLocFab);
+
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
@@ -95,6 +98,14 @@ public class OwnAreaFragment extends Fragment implements OnMapReadyCallback {
         predictionViewModel = new ViewModelProvider(this).get(PredictionViewModel.class);
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
+        currentLocFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getCurrentLocation();
+            }
+        });
+
+
         predictionViewModel.getPredictions().observe(getViewLifecycleOwner(), predictions -> {
             predictionDataList = predictions;
             if (map != null) {
@@ -116,6 +127,7 @@ public class OwnAreaFragment extends Fragment implements OnMapReadyCallback {
         homeViewModel.fetchWeatherData();
     }
 
+    //Function to search location
     private void searchLocation(String location) {
         Geocoder geocoder = new Geocoder(getContext());
         List<Address> addressList;
@@ -132,6 +144,8 @@ public class OwnAreaFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
+
+    //Function to get current location
     private void getCurrentLocation() {
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             map.setMyLocationEnabled(true);
@@ -160,6 +174,8 @@ public class OwnAreaFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
+
+    // Function to add marker
     private void addMarkers(List<InfoPredict> predictions) {
         if (map != null) {
             map.clear();
@@ -169,7 +185,8 @@ public class OwnAreaFragment extends Fragment implements OnMapReadyCallback {
             }
             for (InfoPredict info : predictions) {
                 LatLng latLng = new LatLng(info.getLatitude(), info.getLongitude());
-                double waterLevel = getWaterLevelForLocation(info.getLatitude(), info.getLongitude());
+                //double waterLevel = getWaterLevelForLocation(info.getLatitude(), info.getLongitude());
+                double waterLevel = getWaterLevelForLocation(info.getLocation());
                 String[] days = getNextThreeDays();
 
                 // Determine the highest water level and its corresponding day
@@ -246,6 +263,8 @@ public class OwnAreaFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
+
+    // Function to get InfoHome object
     private void updateHomeData(List<InfoHome> homeData) {
         this.homeDataList = homeData;
         Log.d(TAG, "updateHomeData: Received home data with size " + homeData.size());
@@ -254,18 +273,20 @@ public class OwnAreaFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    private double getWaterLevelForLocation(double latitude, double longitude) {
+
+    // Function to get the water level for location that is available for prediction
+    private double getWaterLevelForLocation(String location) {
         if (homeDataList != null) { // Add null check
             for (InfoHome info : homeDataList) {
-                if (info.getLatitude() == latitude && info.getLongitude() == longitude) {
-                    Log.d(TAG, "getWaterLevelForLocation: Found matching water level for latitude " + latitude + " with water level " + info.getWaterLevel());
+                if (info.getStationName().equals(location)) {
+                    Log.d(TAG, "getWaterLevelForLocation: Found matching water level for location " + info.getStationName() + ": " + info.getWaterLevel());
                     return info.getWaterLevel();
                 }
             }
         } else {
             Log.d(TAG, "getWaterLevelForLocation: homeDataList is null");
         }
-        Log.d(TAG, "getWaterLevelForLocation: No matching water level found for latitude " + latitude);
+        Log.d(TAG, "getWaterLevelForLocation: No matching water level found for latitude " + location);
         return 0.0;
     }
 
