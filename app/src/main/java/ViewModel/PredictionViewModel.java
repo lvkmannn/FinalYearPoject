@@ -47,7 +47,6 @@ public class PredictionViewModel extends ViewModel {
 
     public void fetchPredictions() {
         if (isDataLoaded) {
-            // Data is already loaded, no need to fetch again
             return;
         }
 
@@ -59,11 +58,7 @@ public class PredictionViewModel extends ViewModel {
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                String message = "Network Error";
-                if (e != null) {
-                    message = e.getMessage();
-                }
-                errorMessage.postValue(message);
+                errorMessage.postValue("Network Error: " + e.getMessage());
             }
 
             @Override
@@ -79,33 +74,31 @@ public class PredictionViewModel extends ViewModel {
 
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        double id = jsonObject.getDouble("id");
-                        String district = jsonObject.getString("district");
-                        String location = jsonObject.getString("location");
-                        double latitude = jsonObject.getDouble("latitude");
-                        double longitude = jsonObject.getDouble("longitude");
-                        String date = jsonObject.getString("date");
-                        double normal = jsonObject.getDouble("normal");
-                        double alert = jsonObject.getDouble("alert");
-                        double warning = jsonObject.getDouble("warning");
-                        double danger = jsonObject.getDouble("danger");
-                        double testLoss = jsonObject.getDouble("testLoss");
-                        double MAE = jsonObject.getDouble("MAE");
-                        double MSE = jsonObject.getDouble("MSE");
-                        double RMSE = jsonObject.getDouble("RMSE");
-                        double day1 = jsonObject.getDouble("day1");
-                        double day2 = jsonObject.getDouble("day2");
-                        double day3 = jsonObject.getDouble("day3");
-
-                        InfoPredict data = new InfoPredict(date, district, location, id, testLoss, MAE, MSE, RMSE, day1, day2, day3, normal, alert, warning, danger, latitude, longitude);
+                        InfoPredict data = new InfoPredict(
+                                jsonObject.getString("date"),
+                                jsonObject.getString("district"),
+                                jsonObject.getString("location"),
+                                jsonObject.getDouble("id"),
+                                jsonObject.getDouble("testLoss"),
+                                jsonObject.getDouble("MAE"),
+                                jsonObject.getDouble("MSE"),
+                                jsonObject.getDouble("RMSE"),
+                                jsonObject.getDouble("day1"),
+                                jsonObject.getDouble("day2"),
+                                jsonObject.getDouble("day3"),
+                                jsonObject.getDouble("normal"),
+                                jsonObject.getDouble("alert"),
+                                jsonObject.getDouble("warning"),
+                                jsonObject.getDouble("danger"),
+                                jsonObject.getDouble("latitude"),
+                                jsonObject.getDouble("longitude")
+                        );
                         dataList.add(data);
                     }
                     predictions.postValue(dataList);
-                    isDataLoaded = true;  // Set flag to true after data is loaded
-                } catch (JSONException e) {
+                    isDataLoaded = true;
+                } catch (JSONException | IOException e) {
                     errorMessage.postValue("Data parsing error: " + e.getMessage());
-                } catch (IOException e) {
-                    errorMessage.postValue("Network error: " + e.getMessage());
                 }
             }
         });

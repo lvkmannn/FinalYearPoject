@@ -3,10 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SosFragment"
+    tools:context=".PredictionFragment"
     android:orientation="vertical">
 
-    <ListView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/listPredInfo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
