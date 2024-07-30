@@ -75,6 +75,8 @@ public class WeatherAdapter extends BaseAdapter {
             imageView.setImageResource(R.drawable.sunny);
         } else if (weather.getSummary_forecast().toLowerCase().contains("ribut petir".toLowerCase())) {
             imageView.setImageResource(R.drawable.thunderstorm);
+        } else if (weather.getSummary_forecast().equals("Hujan") || weather.getSummary_forecast().contains("beberapa tempat".toLowerCase()) ) {
+            imageView.setImageResource(R.drawable.baseline_grain_24);
         }
 
 
