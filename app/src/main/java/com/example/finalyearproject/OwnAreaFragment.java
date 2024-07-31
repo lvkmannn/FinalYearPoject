@@ -187,12 +187,30 @@ public class OwnAreaFragment extends Fragment implements OnMapReadyCallback {
                 LatLng latLng = new LatLng(info.getLatitude(), info.getLongitude());
                 //double waterLevel = getWaterLevelForLocation(info.getLatitude(), info.getLongitude());
                 double waterLevel = getWaterLevelForLocation(info.getLocation());
-                String[] days = getNextThreeDays();
+
+
+                // Set the time zone to Malaysia (GMT+8)
+                Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Kuala_Lumpur"));
+                int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+                String[] daysOfWeek = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+
+                // Calculate the upcoming 3 days
+                String day1 = daysOfWeek[(dayOfWeek % 7)]; // today
+                String day2 = daysOfWeek[(dayOfWeek + 1) % 7];
+                String day3 = daysOfWeek[(dayOfWeek + 2) % 7];
 
                 // Determine the highest water level and its corresponding day
                 double highestWaterLevel = Math.max(info.getDay1(), Math.max(info.getDay2(), info.getDay3()));
-                String predictedDay = days[highestWaterLevel == info.getDay1() ? 0 : highestWaterLevel == info.getDay2() ? 1 : 2];
-                String floodLevelString = String.format("%.2f", highestWaterLevel);
+                int highestWaterLevelIndex;
+                if (highestWaterLevel == info.getDay1()) {
+                    highestWaterLevelIndex = 0;
+                } else if (highestWaterLevel == info.getDay2()) {
+                    highestWaterLevelIndex = 1;
+                } else {
+                    highestWaterLevelIndex = 2;
+                }
+
+                String predictedDay = daysOfWeek[(dayOfWeek + highestWaterLevelIndex) % 7];
 
                 // Create the snippet string based on highest water level
                 String snippet;
@@ -203,7 +221,7 @@ public class OwnAreaFragment extends Fragment implements OnMapReadyCallback {
                                     "%s: %.2f Meter\n" +
                                     "%s: %.2f Meter\n" +
                                     "\nFlood is predicted on %s",
-                            waterLevel, days[0], info.getDay1(), days[1], info.getDay2(), days[2], info.getDay3(), predictedDay);
+                            waterLevel, day1, info.getDay1(), day2, info.getDay2(), day3, info.getDay3(), predictedDay);
                 } else {
                     snippet = String.format("Current Water Level: %.2f Meter\n" +
                                     "\n3-Day Water Level Prediction: \n" +
@@ -211,7 +229,7 @@ public class OwnAreaFragment extends Fragment implements OnMapReadyCallback {
                                     "%s: %.2f Meter\n" +
                                     "%s: %.2f Meter\n" +
                                     "\nNo flood is predicted within 3 days",
-                            waterLevel, days[0], info.getDay1(), days[1], info.getDay2(), days[2], info.getDay3());
+                            waterLevel, day1, info.getDay1(), day2, info.getDay2(), day3, info.getDay3());
                 }
 
                 map.addMarker(new MarkerOptions()
@@ -296,16 +314,6 @@ public class OwnAreaFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    private String[] getNextThreeDays() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE", Locale.getDefault());
-        Calendar calendar = Calendar.getInstance(Locale.forLanguageTag("ms-MY"));
-        String[] days = new String[3];
-        for (int i = 0; i < 3; i++) {
-            calendar.add(Calendar.DAY_OF_YEAR, 1);
-            days[i] = dateFormat.format(calendar.getTime());
-        }
-        return days;
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

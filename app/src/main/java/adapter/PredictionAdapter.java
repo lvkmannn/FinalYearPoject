@@ -28,6 +28,7 @@ import model.InfoPredict;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 public class PredictionAdapter extends RecyclerView.Adapter<PredictionAdapter.PredictionViewHolder> {
     private final Context mContext;
@@ -72,12 +73,12 @@ public class PredictionAdapter extends RecyclerView.Adapter<PredictionAdapter.Pr
         }
 
         // Get the current day of the week
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Kuala_Lumpur"));
         int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
 
         // Calculate the day when the flood is predicted
         String[] daysOfWeek = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-        String predictedDay = daysOfWeek[(dayOfWeek + highestWaterLevelIndex + 1) % 7];
+        String predictedDay = daysOfWeek[(dayOfWeek + highestWaterLevelIndex) % 7];
 
         if (highestWaterLevel < infoPredict.getAlert()) {
             holder.textAlert.setText("Status: Normal");
@@ -115,18 +116,21 @@ public class PredictionAdapter extends RecyclerView.Adapter<PredictionAdapter.Pr
         Cartesian cartesian = AnyChart.column();
         cartesian.crosshair().yLabel(true).yStroke((Stroke) null, null, null, (String) null, (String) null);
 
-        Calendar calendar = Calendar.getInstance();
+        // Set the time zone to Malaysia (GMT+8)
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Kuala_Lumpur"));
         int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
         String[] daysOfWeek = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
-        String day1 = daysOfWeek[(dayOfWeek + 1) % 7];
-        String day2 = daysOfWeek[(dayOfWeek + 2) % 7];
-        String day3 = daysOfWeek[(dayOfWeek + 3) % 7];
+        // Calculate the upcoming 3 days
+        String day1 = daysOfWeek[(dayOfWeek % 7)]; // today
+        String day2 = daysOfWeek[(dayOfWeek + 1) % 7];
+        String day3 = daysOfWeek[(dayOfWeek + 2) % 7];
 
         List<DataEntry> data = new ArrayList<>();
-        data.add(new ValueDataEntry(day1, infoPredict.getDay1()));
-        data.add(new ValueDataEntry(day2, infoPredict.getDay2()));
-        data.add(new ValueDataEntry(day3, infoPredict.getDay3()));
+        data.add(new ValueDataEntry(day1, Math.round(infoPredict.getDay1() * 100.0) / 100.0));
+        data.add(new ValueDataEntry(day2, Math.round(infoPredict.getDay2() * 100.0) / 100.0));
+        data.add(new ValueDataEntry(day3, Math.round(infoPredict.getDay3() * 100.0) / 100.0));
+
 
         Column column = cartesian.column(data);
 
@@ -169,6 +173,7 @@ public class PredictionAdapter extends RecyclerView.Adapter<PredictionAdapter.Pr
 
         anyChartView.setChart(cartesian);
     }
+
 
     public static class PredictionViewHolder extends RecyclerView.ViewHolder {
         TextView textDistrict, textLocation, textAlert, textPrediction, textWL;
